@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #483333;
+            margin: 0;
+        }
+        .container {
+            background-color: rgb(177, 151, 151);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+        input {
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+        }
+        #result p {
+            margin: 5px 0;
+        }
+        #countryFlag {
+            width: 100px;
+            height: auto;
+            margin-top: 10px;
+            border: 7px solid #130d0d;
+            box-shadow: 0 0 9px rgba(6, 4, 4, 0.1);
+        }
+        .input{
+            position: relative;
+            right: 3%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Country Information</h1>
+        <input type="text" id="countryInput" placeholder="Enter country name" class="input">
+        <button onclick="getCountryInfo()">Get Info</button>
+        <div id="result">
+            <p id="countryName"></p>
+            <p id="countryLanguage"></p>
+            <p id="countryCode"></p>
+            <p id="countryCapital"></p>
+            <img id="countryFlag" src="" alt="Country flag">
+        </div>
+    </div>
+    <script>
+        async function getCountryInfo() {
+            const countryName = document.getElementById('countryInput').value;
+            const apiUrl = `https://restcountries.com/v3.1/name/${countryName}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                if (!response.ok) throw new Error('Country not found');
+                const countryData = await response.json();
+
+                // Extract the relevant data
+                const country = countryData[0];
+                const name = country.name.common;
+                const languages = Object.values(country.languages).join(', ');
+                const callingCode = `+${country.idd.root}${country.idd.suffixes[0]}`;
+                const capital = country.capital[0];
+                const flag = country.flags.png;
+
+                // Display the data
+                document.getElementById('countryName').textContent = `Name: ${name}`;
+                document.getElementById('countryLanguage').textContent = `Language(s): ${languages}`;
+                document.getElementById('countryCode').textContent = `Calling Code: ${callingCode}`;
+                document.getElementById('countryCapital').textContent = `Capital: ${capital}`;
+                document.getElementById('countryFlag').src = flag;
+                document.getElementById('countryFlag').alt = `Flag of ${name}`;
+            } catch (error) {
+                document.getElementById('result').textContent = 'Country not found or error fetching data';
+            }
+        }
+    </script>
+</body>
+</html>
